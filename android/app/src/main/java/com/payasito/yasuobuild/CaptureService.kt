@@ -189,38 +189,110 @@ class CaptureService : Service() {
 
     /* ---------- Burbuja ---------- */
 
+    private val B_TAMS = intArrayOf(40, 54, 70)               // dp
+    private val B_ALFAS = floatArrayOf(1f, 0.8f, 0.6f, 0.4f)
+    private var bTam = 1; private var bAlfa = 0
+    private var menu: View? = null
+    private val cerrarMenu = Runnable { quitarMenu() }
+
+    private fun aplicarBurbuja() {
+        val v = burbuja ?: return; val lp = burbujaLp ?: return
+        val px = (B_TAMS[bTam] * resources.displayMetrics.density).toInt()
+        lp.width = px; lp.height = px
+        v.alpha = B_ALFAS[bAlfa]
+        wm.updateViewLayout(v, lp)
+        prefs.edit().putInt("btam", bTam).putInt("balfa", bAlfa).putInt("bx", lp.x).putInt("by", lp.y).apply()
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private fun mostrarBurbuja() {
         if (burbuja != null) return
         val dp = resources.displayMetrics.density
-        val tam = (54 * dp).toInt()
+        bTam = prefs.getInt("btam", 1).coerceIn(0, 2); bAlfa = prefs.getInt("balfa", 0).coerceIn(0, 3)
+        val tam = (B_TAMS[bTam] * dp).toInt()
         val v = ImageView(this).apply {
             setImageResource(R.mipmap.ic_launcher)
-            alpha = 0.9f
+            alpha = B_ALFAS[bAlfa]
         }
         val lp = WindowManager.LayoutParams(tam, tam,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT).apply {
             gravity = Gravity.TOP or Gravity.START
-            x = 0; y = (120 * dp).toInt()
+            x = prefs.getInt("bx", 0); y = prefs.getInt("by", (120 * dp).toInt())
         }
-        var x0 = 0; var y0 = 0; var tx = 0f; var ty = 0f; var movio = false
+        var x0 = 0; var y0 = 0; var tx = 0f; var ty = 0f; var movio = false; var largo = false
+        val alMantener = Runnable { largo = true; mostrarMenu() }
         v.setOnTouchListener { _, e ->
             when (e.action) {
-                MotionEvent.ACTION_DOWN -> { x0 = lp.x; y0 = lp.y; tx = e.rawX; ty = e.rawY; movio = false; true }
+                MotionEvent.ACTION_DOWN -> {
+                    x0 = lp.x; y0 = lp.y; tx = e.rawX; ty = e.rawY; movio = false; largo = false
+                    main.postDelayed(alMantener, 500)
+                    true
+                }
                 MotionEvent.ACTION_MOVE -> {
                     val dx = e.rawX - tx; val dy = e.rawY - ty
-                    if (abs(dx) > 12 * dp || abs(dy) > 12 * dp) movio = true
+                    if (!movio && (abs(dx) > 12 * dp || abs(dy) > 12 * dp)) { movio = true; main.removeCallbacks(alMantener); quitarMenu() }
                     if (movio) { lp.x = x0 + dx.toInt(); lp.y = y0 + dy.toInt(); wm.updateViewLayout(v, lp) }
                     true
                 }
-                MotionEvent.ACTION_UP -> { if (!movio) capturar(); true }
+                MotionEvent.ACTION_UP -> {
+                    main.removeCallbacks(alMantener)
+                    if (movio) prefs.edit().putInt("bx", lp.x).putInt("by", lp.y).apply()
+                    else if (!largo) capturar()
+                    true
+                }
+                MotionEvent.ACTION_CANCEL -> { main.removeCallbacks(alMantener); true }
                 else -> false
             }
         }
         wm.addView(v, lp)
         burbuja = v; burbujaLp = lp
+    }
+
+    /** Menú chiquito al mantener apretada la burbuja: tamaño, transparencia y apagar. */
+    @SuppressLint("ClickableViewAccessibility")
+    private fun mostrarMenu() {
+        quitarMenu()
+        val dp = resources.displayMetrics.density
+        val fila = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            background = android.graphics.drawable.GradientDrawable().apply {
+                setColor(0xEE131A26.toInt()); cornerRadius = 22 * dp; setStroke((1 * dp).toInt(), 0xFF26324A.toInt())
+            }
+            setPadding((4 * dp).toInt(), 0, (4 * dp).toInt(), 0)
+        }
+        fun boton(txt: String, alTocar: () -> Unit) = TextView(this).apply {
+            text = txt; textSize = 18f; setTextColor(0xFFE6ECF5.toInt()); gravity = Gravity.CENTER
+            setPadding((12 * dp).toInt(), (8 * dp).toInt(), (12 * dp).toInt(), (8 * dp).toInt())
+            setOnClickListener { alTocar(); main.removeCallbacks(cerrarMenu); main.postDelayed(cerrarMenu, 4000) }
+        }
+        fila.addView(boton("−") { if (bTam > 0) { bTam--; aplicarBurbuja() } })
+        fila.addView(boton("+") { if (bTam < 2) { bTam++; aplicarBurbuja() } })
+        fila.addView(boton("◐") { bAlfa = (bAlfa + 1) % B_ALFAS.size; aplicarBurbuja() })
+        fila.addView(boton("⏻") { quitarMenu(); Toast.makeText(this, "Burbuja apagada", Toast.LENGTH_SHORT).show(); stopSelf() })
+        fila.setOnTouchListener { _, e -> if (e.action == MotionEvent.ACTION_OUTSIDE) { quitarMenu(); true } else false }
+        val b = burbujaLp ?: return
+        val t = tamReal()
+        val lp = WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
+            PixelFormat.TRANSLUCENT).apply {
+            gravity = Gravity.TOP or Gravity.START
+            val anchoMenu = (190 * dp).toInt()
+            // al lado de la burbuja; si no entra a la derecha, a la izquierda
+            x = if (b.x + b.width + anchoMenu < t.x) b.x + b.width + (6 * dp).toInt() else maxOf(0, b.x - anchoMenu - (6 * dp).toInt())
+            y = b.y
+        }
+        wm.addView(fila, lp)
+        menu = fila
+        main.postDelayed(cerrarMenu, 4000)
+    }
+
+    private fun quitarMenu() {
+        main.removeCallbacks(cerrarMenu)
+        menu?.let { try { wm.removeView(it) } catch (_: Exception) {} }
+        menu = null
     }
 
     /* ---------- Ventanita con la build ---------- */
@@ -347,6 +419,7 @@ class CaptureService : Service() {
 
     override fun onDestroy() {
         activo = false
+        quitarMenu()
         try { burbuja?.let { wm.removeView(it) } } catch (_: Exception) {}
         ocultarPanel()
         web?.destroy()
