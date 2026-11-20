@@ -1,0 +1,16 @@
+{
+  "name": "Yasuo Build",
+  "short_name": "Yasuo",
+  "description": "Build, runas y plan de juego de Yasuo en Wild Rift, con escaneo de la pantalla de carga",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0f17",
+  "theme_color": "#0b0f17",
+  "lang": "es",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

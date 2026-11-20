@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yasuo Build</title>
+<meta name="theme-color" content="#0b0f17">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0f17;--card:#131a26;--card2:#1a2333;--line:#26324a;--txt:#e6ecf5;--mut:#8b98ad;--acc:#5ad1e6;--acc2:#7c9cff;--good:#4ade80;--bad:#f87171;--mid:#facc15}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 500px at 50% -200px,#16324a 0%,var(--bg) 60%);color:var(--txt);font:15px/1.5 Inter,system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:18px 14px 60px}
+h1{font:700 30px/1.1 Rajdhani,sans-serif;letter-spacing:.5px;margin:6px 0 2px}
+h1 span{color:var(--acc)}
+h2{font:700 19px Rajdhani,sans-serif;letter-spacing:.4px;margin:0 0 10px;color:var(--acc)}
+.sub{color:var(--mut);font-size:13px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+select,input[type=text]{background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;width:100%}
+input[type=text]:focus,select:focus{outline:2px solid var(--acc);border-color:transparent}
+.tabs{display:flex;gap:8px;margin:14px 0}
+.tab{flex:1;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--txt);font:700 16px Rajdhani,sans-serif;cursor:pointer}
+.tab.on{background:linear-gradient(135deg,#1f4b63,#2a3d7a);border-color:var(--acc)}
+.items{display:grid;grid-template-columns:1fr;gap:6px}
+.it{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:9px 11px}
+.it .n{font-weight:600}
+.it .k{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+.it .g{font-size:12px;color:var(--mut);text-align:right;white-space:nowrap}
+.it.chg{border-color:var(--mid);background:#2a2614}
+.why{font-size:12.5px;color:#f5dd8a;margin-top:2px}
+.pill{display:inline-block;padding:3px 9px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:12.5px;margin:2px 4px 2px 0}
+.pill.chg{border-color:var(--mid);color:#f5dd8a}
+.mut{color:var(--mut);font-size:13px}
+.badge{font:700 12px Inter;padding:3px 8px;border-radius:6px}
+.b-dificil{background:#3a1717;color:var(--bad)}.b-favorable{background:#123222;color:var(--good)}.b-parejo{background:#33300f;color:var(--mid)}.b-contra{background:#2a2333;color:#c4a7ff}
+ul{margin:6px 0;padding-left:18px}li{margin:3px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:var(--card2);border-radius:10px;padding:9px;border:1px solid var(--line)}
+.stat b{display:block;font:700 20px Rajdhani}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.bar{height:10px;border-radius:6px;background:var(--card2);overflow:hidden;margin:4px 0 8px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+a{color:var(--acc)}
+.warn{color:var(--bad);font-size:13px}
+.hide{display:none}
+.en{color:var(--mut);font-size:11px;font-weight:400;margin-left:4px}
+.seg{display:flex;gap:8px}
+.seg .tab{padding:9px 4px;font-size:15px}
+.wr{font:700 22px Rajdhani}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;margin:3px 4px 3px 0;border-radius:999px;background:var(--card2);border:1px solid var(--line);color:var(--txt);font:inherit;font-size:13px;cursor:pointer}
+.dot{width:8px;height:8px;border-radius:50%}
+.d-dificil{background:var(--bad)}.d-favorable{background:var(--good)}.d-parejo{background:var(--mid)}.d-contra{background:#c4a7ff}
+.crit{margin-top:8px;padding:9px 11px;border-radius:10px;background:var(--card2);border:1px solid var(--line);font-size:13.5px}
+.ic{width:44px;height:44px;border-radius:9px;border:1px solid var(--line);flex:none;background:#0d131d}
+.ic.r{border-radius:50%}
+.ic.s{width:30px;height:30px}
+.it .l{display:flex;gap:10px;align-items:center;min-width:0}
+.rr{display:flex;gap:10px;align-items:center;margin:7px 0}
+.pill.sp{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px}
+details summary{cursor:pointer;color:var(--acc);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Build de <span>Yasuo</span></h1>
+  <div class="sub">Wild Rift · build, runas y plan de juego por rival</div>
+
+  <div class="card" id="scanBox">
+    <div class="seg">
+      <label class="tab on" style="text-align:center;cursor:pointer">🖼️ Escanear captura<input type="file" id="scanFile" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden"></label>
+      <label class="tab" style="text-align:center;cursor:pointer;flex:.6">📷 Foto<input type="file" id="scanCam" accept="image/*" capture="environment" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden"></label>
+    </div>
+    <div id="scanState" class="mut" style="margin-top:6px"></div>
+    <div class="mut" style="margin-top:6px;font-size:12px">En la pantalla de carga sacá captura (Game Space o Encendido + Bajar volumen) y elegila acá. Lee los 5 enemigos, arma la build y el plan de juego.</div>
+    <div id="scanOut" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <label class="mut" for="patch">Parche</label>
+    <select id="patch"></select>
+    <div id="patchInfo" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <div class="mut" style="margin-bottom:6px">Línea</div>
+    <div class="seg"><button class="tab on" id="lMid">Mid</button><button class="tab" id="lBaron">Barón</button></div>
+    <div class="mut" style="margin:12px 0 6px">Runa clave</div>
+    <div class="seg"><button class="tab on kb" data-k="grasp">Grasp</button><button class="tab kb" data-k="lt">Lethal Tempo</button><button class="tab kb" data-k="conq">Conquistador</button></div>
+    <div id="keyInfo" class="mut" style="margin-top:8px;font-size:12.5px"></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" id="tBase">Mejor build 1vs1</button>
+    <button class="tab" id="tRival">Contra quién juego</button>
+  </div>
+
+  <div class="card hide" id="rivalBox">
+    <label class="mut" for="rival">Escribí el campeón rival de línea</label>
+    <input type="text" id="rival" list="champList" placeholder="Ej: Malphite, Zed, Ahri…" autocomplete="off">
+    <datalist id="champList"></datalist>
+    <div id="chips" style="margin-top:8px"></div>
+    <div id="rivalInfo" style="margin-top:8px"></div>
+    <details id="teamBox" style="margin-top:12px">
+      <summary>Equipo rival completo (opcional)</summary>
+      <div class="mut" style="margin:6px 0">Cargá los otros 4 enemigos y ajusto los últimos ítems según todo el equipo.</div>
+      <div class="grid2">
+        <input type="text" class="team" list="champList" placeholder="Enemigo 2" autocomplete="off">
+        <input type="text" class="team" list="champList" placeholder="Enemigo 3" autocomplete="off">
+        <input type="text" class="team" list="champList" placeholder="Enemigo 4" autocomplete="off">
+        <input type="text" class="team" list="champList" placeholder="Enemigo 5" autocomplete="off">
+      </div>
+      <div id="teamInfo" style="margin-top:8px"></div>
+    </details>
+  </div>
+
+  <div id="out"></div>
+
+  <div class="card hide" id="planBox">
+    <h2>Plan de juego <span id="planVs" class="mut" style="font:500 13px Inter"></span></h2>
+    <div class="seg" id="faseTabs">
+      <button class="tab on" data-f="0">Niv. 1–5</button><button class="tab" data-f="1">Niv. 6–11</button><button class="tab" data-f="2">Cierre</button>
+    </div>
+    <div class="row" style="margin-top:10px;justify-content:space-between">
+      <div><span class="wr" id="tmr">--:--</span> <span class="mut" id="tmrInfo" style="font-size:12px"></span></div>
+      <div class="row"><button class="chip" id="tStart">▶ Empezó</button><button class="chip" id="tStop">■</button></div>
+    </div>
+    <div id="planOut" style="margin-top:8px"></div>
+    <div class="row" style="margin-top:10px"><button class="chip" id="planGen">✨ Armar plan con Gemini</button><span id="planState" class="mut" style="font-size:12px"></span></div>
+  </div>
+
+  <div class="card" id="penBox">
+    <h2>¿Mortal Reminder o Dominik's?</h2>
+    <div class="mut">Mové la armadura del rival y mirá cuánto daño físico le llega con cada ítem.</div>
+    <div style="margin-top:8px">Armadura del rival: <b id="armV">120</b></div>
+    <input type="range" id="arm" min="30" max="300" value="120">
+    <div id="penOut"></div>
+  </div>
+
+  <div class="card">
+    <details id="cfgBox">
+      <summary>⚙️ Clave de Gemini <span id="cfgTag" class="mut" style="font-weight:400"></span></summary>
+      <div class="mut" style="margin:8px 0;font-size:12.5px">Pegá tu clave de Google AI Studio. Queda guardada solo en este celular; no se sube a ningún lado.</div>
+      <input type="text" id="cfgKey" placeholder="AIza…" autocomplete="off" spellcheck="false" style="-webkit-text-security:disc">
+      <div class="row" style="margin-top:8px"><button class="chip" id="cfgSave">Guardar y probar</button><button class="chip" id="cfgDel">Borrar</button></div>
+      <div id="cfgOut" class="mut" style="margin-top:6px;font-size:12.5px"></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>Fuentes</h2>
+    <div id="src" class="mut"></div>
+  </div>
+</div>
+
+<script>
+const DATA = {"items": {"Bloodthirster": {"oro": 3200, "eficiencia": "119.14%", "crit": 0}, "Guardian Angel": {"oro": 3200, "eficiencia": "89.85%", "crit": 0}, "Blade of the Ruined King": {"oro": 3100, "eficiencia": "103.76%", "crit": 0}, "Infinity Edge": {"oro": 3400, "eficiencia": "128.68%", "crit": 25}, "Mortal Reminder": {"oro": 3000, "eficiencia": "128.61%", "grupos": ["FATALITY"], "crit": 25}, "Lord Dominik's Regards": {"oro": 3300, "eficiencia": "122.73%", "grupos": ["FATALITY"], "crit": 25}, "Maw of Malmortius": {"oro": 3000, "eficiencia": "133.89%", "grupos": ["LIFELINE"], "crit": 0}, "Death's Dance": {"oro": 3300, "eficiencia": "124.50%", "crit": 0}, "Wit's End": {"oro": 2800, "eficiencia": "107.07%", "crit": 0}, "Essence Reaver": {"oro": 3000, "eficiencia": "158.06%", "grupos": ["SPELLBLADE"], "crit": 25}, "Edge of Night": {"oro": 3000, "eficiencia": "105.53%", "grupos": ["SPELLSHIELD"], "crit": 0}, "Sterak's Gage": {"oro": 3200, "eficiencia": "85.84%", "grupos": ["LIFELINE"], "crit": 0}, "Terminus": {"oro": 3000, "eficiencia": "87.50%", "grupos": ["FATALITY", "BLIGHT"], "crit": 0}, "Stormrazor": {"oro": 3000, "eficiencia": "133.34%", "crit": 25}, "Immortal Shieldbow": {"oro": 3000, "eficiencia": "118.06%", "grupos": ["LIFELINE"], "crit": 25}, "Gluttonous Greaves": {"oro": 1000, "eficiencia": "145.00%", "crit": 0}, "Berserker's Greaves": {"oro": 1200, "eficiencia": "157.21%", "crit": 0}, "Mercury's Treads": {"oro": 1200, "eficiencia": "179.53%", "crit": 0}, "Plated Steelcaps": {"oro": 1200, "eficiencia": "153.71%", "crit": 0}, "Long Sword": {"oro": 500, "eficiencia": "100%", "crit": 0}, "Kaenic Rookern": {"oro": 2800, "eficiencia": "123.77%", "crit": 0}, "Mercurial Scimitar": {"oro": 3100, "eficiencia": "110.48%", "crit": 0}}, "champs": [["Aatrox", ["FIGHTER"]], ["Ahri", ["MAGE", "ASSASSIN"]], ["Akali", ["ASSASSIN"]], ["Akshan", ["MARKSMAN", "ASSASSIN"]], ["Alistar", ["TANK", "SUPPORT"]], ["Ambessa", ["FIGHTER", "ASSASSIN"]], ["Amumu", ["TANK"]], ["Annie", ["MAGE", "SUPPORT"]], ["Ashe", ["MARKSMAN", "SUPPORT"]], ["Aurelion Sol", ["MAGE"]], ["Aurora", ["MAGE", "ASSASSIN"]], ["Bard", ["SUPPORT", "MAGE"]], ["Blitzcrank", ["TANK", "SUPPORT"]], ["Brand", ["MAGE"]], ["Braum", ["SUPPORT", "TANK"]], ["Caitlyn", ["MARKSMAN"]], ["Camille", ["FIGHTER"]], ["Cho'Gath", ["TANK", "MAGE"]], ["Corki", ["MARKSMAN"]], ["Darius", ["FIGHTER"]], ["Diana", ["FIGHTER", "MAGE"]], ["Dr. Mundo", ["FIGHTER", "TANK"]], ["Draven", ["MARKSMAN"]], ["Ekko", ["ASSASSIN", "MAGE"]], ["Evelynn", ["ASSASSIN"]], ["Ezreal", ["MARKSMAN", "MAGE"]], ["Fiddlesticks", ["MAGE"]], ["Fiora", ["FIGHTER", "ASSASSIN"]], ["Fizz", ["ASSASSIN", "MAGE"]], ["Galio", ["TANK", "MAGE"]], ["Garen", ["FIGHTER", "TANK"]], ["Gnar", ["FIGHTER", "TANK"]], ["Gragas", ["TANK", "MAGE"]], ["Graves", ["MARKSMAN", "FIGHTER"]], ["Gwen", ["FIGHTER"]], ["Hecarim", ["FIGHTER"]], ["Heimerdinger", ["MAGE", "SUPPORT"]], ["Hwei", ["MAGE", "SUPPORT"]], ["Irelia", ["FIGHTER", "ASSASSIN"]], ["Janna", ["SUPPORT", "MAGE"]], ["Jarvan IV", ["TANK", "FIGHTER"]], ["Jax", ["FIGHTER"]], ["Jayce", ["FIGHTER", "MARKSMAN"]], ["Jhin", ["MARKSMAN", "MAGE"]], ["Jinx", ["MARKSMAN"]], ["K'Sante", ["TANK", "FIGHTER"]], ["Kai'Sa", ["MARKSMAN", "ASSASSIN"]], ["Kalista", ["MARKSMAN"]], ["Karma", ["MAGE", "SUPPORT"]], ["Kassadin", ["ASSASSIN", "MAGE"]], ["Katarina", ["ASSASSIN", "MAGE"]], ["Kayle", ["FIGHTER", "SUPPORT"]], ["Kayn", ["FIGHTER"]], ["Kennen", ["MAGE", "MARKSMAN"]], ["Kha'Zix", ["ASSASSIN", "FIGHTER"]], ["Kindred", ["MARKSMAN"]], ["Kog'Maw", ["MARKSMAN", "MAGE"]], ["Lee Sin", ["FIGHTER", "ASSASSIN"]], ["Leona", ["TANK", "SUPPORT"]], ["Lillia", ["FIGHTER"]], ["Lissandra", ["MAGE"]], ["Lucian", ["MARKSMAN"]], ["Lulu", ["SUPPORT", "MAGE"]], ["Lux", ["MAGE", "SUPPORT"]], ["Malphite", ["TANK"]], ["Maokai", ["TANK"]], ["Master Yi", ["ASSASSIN", "FIGHTER"]], ["Mel", ["MAGE"]], ["Milio", ["SUPPORT", "MAGE"]], ["Miss Fortune", ["MARKSMAN", "MAGE"]], ["Mordekaiser", ["FIGHTER", "MAGE"]], ["Morgana", ["MAGE", "SUPPORT"]], ["Nami", ["SUPPORT", "MAGE"]], ["Nasus", ["FIGHTER", "TANK"]], ["Nautilus", ["TANK", "SUPPORT"]], ["Nidalee", ["ASSASSIN", "MAGE"]], ["Nilah", ["FIGHTER"]], ["Nocturne", ["FIGHTER", "ASSASSIN"]], ["Norra", ["MAGE"]], ["Nunu & Willump", ["TANK", "MAGE"]], ["Olaf", ["FIGHTER"]], ["Orianna", ["MAGE", "SUPPORT"]], ["Ornn", ["TANK"]], ["Pantheon", ["FIGHTER", "ASSASSIN"]], ["Poppy", ["TANK", "FIGHTER"]], ["Pyke", ["ASSASSIN", "SUPPORT"]], ["Rakan", ["SUPPORT", "TANK"]], ["Rammus", ["TANK"]], ["Rell", ["TANK", "SUPPORT"]], ["Renekton", ["FIGHTER"]], ["Rengar", ["ASSASSIN"]], ["Riven", ["FIGHTER", "ASSASSIN"]], ["Rumble", ["FIGHTER", "MAGE"]], ["Ryze", ["MAGE"]], ["Samira", ["MARKSMAN", "ASSASSIN"]], ["Senna", ["MARKSMAN", "SUPPORT"]], ["Seraphine", ["MAGE", "SUPPORT"]], ["Sett", ["FIGHTER"]], ["Shen", ["TANK", "SUPPORT"]], ["Shyvana", ["FIGHTER", "TANK"]], ["Singed", ["TANK", "MAGE"]], ["Sion", ["TANK", "FIGHTER"]], ["Sivir", ["MARKSMAN"]], ["Skarner", ["TANK", "FIGHTER"]], ["Smolder", ["MARKSMAN", "MAGE"]], ["Sona", ["SUPPORT", "MAGE"]], ["Soraka", ["SUPPORT", "MAGE"]], ["Swain", ["MAGE", "TANK"]], ["Sylas", ["MAGE", "ASSASSIN"]], ["Syndra", ["MAGE"]], ["Taliyah", ["MAGE", "SUPPORT"]], ["Talon", ["ASSASSIN"]], ["Teemo", ["MARKSMAN", "MAGE"]], ["Thresh", ["TANK"]], ["Tristana", ["MARKSMAN"]], ["Tryndamere", ["FIGHTER"]], ["Twisted Fate", ["MAGE", "MARKSMAN"]], ["Twitch", ["MARKSMAN"]], ["Urgot", ["FIGHTER"]], ["Varus", ["MARKSMAN", "MAGE"]], ["Vayne", ["MARKSMAN", "ASSASSIN"]], ["Veigar", ["MAGE"]], ["Vel'Koz", ["MAGE", "SUPPORT"]], ["Vex", ["MAGE"]], ["Vi", ["FIGHTER"]], ["Viego", ["ASSASSIN"]], ["Viktor", ["MAGE"]], ["Vladimir", ["MAGE"]], ["Volibear", ["FIGHTER", "TANK"]], ["Warwick", ["FIGHTER"]], ["Wukong", ["FIGHTER", "TANK"]], ["Xayah", ["MARKSMAN", "MAGE"]], ["Xin Zhao", ["FIGHTER", "TANK"]], ["Yasuo", ["FIGHTER", "ASSASSIN"]], ["Yone", ["ASSASSIN"]], ["Yunara", ["MARKSMAN"]], ["Yuumi", ["SUPPORT", "MAGE"]], ["Zed", ["ASSASSIN"]], ["Zeri", ["MARKSMAN"]], ["Ziggs", ["MAGE"]], ["Zilean", ["SUPPORT", "MAGE"]], ["Zoe", ["MAGE"]], ["Zyra", ["MAGE"]]]};
+
+/* ====== PARCHES: para un parche nuevo, copiar el bloque y cambiar los datos ====== */
+const PATCHES = {
+  "7.3f": {
+    fecha: "11 nov 2026",
+    cambios: [
+      "Armadura por nivel: 4.3 → 5.2",
+      "E (Sweeping Blade) daño base: 70/80/90/100 → 70/90/110/130"
+    ],
+    lectura: "Buff de línea temprana: más daño con la E y más aguante en trades. Mid sigue siendo su mejor línea.",
+    lineas: {
+      mid: {
+        nombre: "Mid",
+        stats: [
+          ["Diamante+ · 11 nov", "47.35%", "Tier C · pick 7.89% · ban 9.7%"],
+          ["Diamante+ · 13 nov", "48.5%", "Tier C · seemeta"],
+          ["Retador", "47.52%", "Tier C · pick 6.36%"],
+          ["Sovereign", "48.56%", "Tier B · pick 7.42%"]
+        ],
+        items: [
+          {slot:"Botas", n:"Berserker's Greaves", nota:"Más adelante subilas a Gunmetal Greaves (Tier 3)"},
+          {slot:"1º", n:"Blade of the Ruined King"},
+          {slot:"2º", n:"Essence Reaver"},
+          {slot:"3º", n:"Mortal Reminder", nota:"Alternativa: Lord Dominik's (54% WR, menos partidas)"},
+          {slot:"4º", n:"Infinity Edge"},
+          {slot:"5º", n:"Guardian Angel", nota:"Lo compran 69% de los top 26 de China"}
+        ],
+        nucleoWR: "BotRK + Essence Reaver + Mortal Reminder: 52.1% WR (20.65% de uso)",
+        runas: [
+          {fila:"Clave", n:"Grasp of the Undying"},
+          {fila:"Fila 1", n:"Demolish", nota:"48.9% WR · alternativa Courage of the Colossus (48.3%, más usada)"},
+          {fila:"Fila 2", n:"Second Wind"},
+          {fila:"Fila 3", n:"Perseverance", nota:"WR China la llama Unflinching · Overgrowth si no tienen CC (WildRiftGuides)"},
+          {fila:"Secundaria", n:"Legend: Alacrity"}
+        ]
+      },
+      baron: {
+        nombre: "Barón",
+        stats: [
+          ["Diamante+ · 11 nov", "46.21%", "Tier D · pick 1.84% · ban 9.7%"],
+          ["Diamante+ · 13 nov", "48.1%", "Tier D · seemeta"],
+          ["Retador", "46.11%", "Tier D · pick 1.63%"],
+          ["Sovereign", "45.21%", "Tier D · pick 1.79%"]
+        ],
+        items: [
+          {slot:"Botas", n:"Berserker's Greaves", nota:"Más adelante subilas a Gunmetal Greaves (Tier 3)"},
+          {slot:"1º", n:"Blade of the Ruined King"},
+          {slot:"2º", n:"Essence Reaver"},
+          {slot:"3º", n:"Lord Dominik's Regards", nota:"Alternativa: Mortal Reminder (51.1% WR)"},
+          {slot:"4º", n:"Infinity Edge"},
+          {slot:"5º", n:"Guardian Angel", nota:"Lo compran 69% de los top 26 de China"}
+        ],
+        nucleoWR: "BotRK + Essence Reaver + Lord Dominik's: 52.4% WR (6.97% de uso)",
+        runas: [
+          {fila:"Clave", n:"Grasp of the Undying"},
+          {fila:"Fila 1", n:"Courage of the Colossus", nota:"48% WR · Demolish es más usada pero gana menos (46.4%)"},
+          {fila:"Fila 2", n:"Second Wind"},
+          {fila:"Fila 3", n:"Perseverance", nota:"WR China la llama Unflinching · Overgrowth si no tienen CC (WildRiftGuides)"},
+          {fila:"Secundaria", n:"Legend: Alacrity"}
+        ]
+      }
+    },
+    claves: {
+      grasp: {nombre:"Grasp of the Undying", info:"Recomendada por datos: está en el 92% de las páginas de los 26 mejores Yasuo de China (WR China)."},
+      conq: {nombre:"Conqueror", info:"Tu página de la partida del 15 nov (victoria 29-23). Conviene en peleas largas más que en trades cortos (WildRiftGuides). Sin winrate publicado y casi no aparece entre los top de China.",
+        runas: {
+          mid: [{fila:"Clave", n:"Conqueror"},{fila:"Fila 1", n:"Brutal"},{fila:"Fila 2", n:"Cut Down"},{fila:"Fila 3", n:"Legend: Alacrity"},{fila:"Secundaria", n:"Bone Plating"}],
+          baron: [{fila:"Clave", n:"Conqueror"},{fila:"Fila 1", n:"Brutal"},{fila:"Fila 2", n:"Cut Down"},{fila:"Fila 3", n:"Legend: Alacrity"},{fila:"Secundaria", n:"Bone Plating"}]
+        }},
+      lt: {nombre:"Lethal Tempo", info:"La recomiendan WR-META (mid) y WildRiftCore: más velocidad de ataque para sacar la Q más seguido. Sin winrate publicado.",
+        runas: {
+          mid: [{fila:"Clave", n:"Lethal Tempo"},{fila:"Fila 1", n:"Brutal"},{fila:"Fila 2", n:"Giant Slayer"},{fila:"Fila 3", n:"Legend: Alacrity"},{fila:"Secundaria", n:"Bone Plating"}],
+          baron: [{fila:"Clave", n:"Lethal Tempo"},{fila:"Fila 1", n:"Brutal"},{fila:"Fila 2", n:"Coup de Grace"},{fila:"Fila 3", n:"Legend: Alacrity"},{fila:"Secundaria", n:"Bone Plating"}]
+        }}
+    },
+    // Winrate real de Yasuo contra cada rival: [gana %, esperado %, "h" más difícil / "e" más fácil]. China Diamante+, 13 nov 2026 (seemeta)
+    matchupWR: {
+      mid: {"Teemo":[40.6,46.0,"h"],"Vladimir":[42.3,45.8,"h"],"Syndra":[43.7,45.9,"h"],"Brand":[44.4,46.3,"h"],"Vel'Koz":[45.5,47.9,"h"],
+            "Mel":[54.0,51.9,"e"],"Ryze":[51.2,48.6,"e"],"Zyra":[49.6,45.7,"e"],"Ahri":[48.9,46.5,"e"],"Ekko":[48.3,46.3,"e"]},
+      baron: {"Cho'Gath":[44.3,47.0,"h"],"Mordekaiser":[45.2,46.8,"h"],"Darius":[46.8,48.4,"h"],"Sett":[46.9,47.5,"h"],"Garen":[47.8,49.0,"h"],
+              "Yone":[49.3,47.4,"e"],"K'Sante":[48.5,46.6,"e"],"Malphite":[46.9,45.5,"e"]}
+    },
+    inicio: "Long Sword",
+    hechizos: ["Flash","Ignite"],
+    habilidades: "Q al máximo → E → W · R en 5, 9 y 13 · Nivel 1 Q, nivel 2 E, nivel 3 W",
+    fuentes: [
+      ["Rift Patch Notes – cambios de Yasuo","https://www.riftpatchnotes.com/champion/yasuo#patch-7.3f"],
+      ["WR China – builds y winrate","https://wrchina.gg/c/yasuo/"],
+      ["WildRift Alpha – Yasuo","https://www.wildriftalpha.com/es/champions/yasuo"],
+      ["WildRiftFire – Yasuo","https://wildriftfire.com/guide/yasuo"],
+      ["WR-META – Yasuo","https://wr-meta.com/11-yasuo.html"],
+      ["seemeta – winrate por matchup (China Diamante+)","https://seemeta.com/en/wild-rift/champions"],
+      ["WildRiftGuides – Yasuo mid","https://www.wildriftguides.com/champion/yasuo/mid"],
+      ["WildRiftCore – Yasuo builds","https://wildriftcore.com/en/champions/yasuo/builds/"],
+      ["WildRiftFire – tier list de runas","https://www.wildriftfire.com/rune-list"],
+      ["wr-lab (Osvaldo-Peralta) – ítems que no se combinan","https://github.com/Osvaldo-Peralta/wr-lab"],
+      ["wildrift-champions-api (iArmanKarimi) – método para roles de Riot","https://github.com/iArmanKarimi/wildrift-champions-api"],
+      ["ry2x/WildRift-Merged-Stats-Data – winrate diario de China","https://github.com/ry2x/WildRift-Merged-Stats-Data"],
+      ["wildrift-gold-efficiency (changchiyou) – oro, eficiencia y crítico 7.3f","https://github.com/changchiyou/wildrift-gold-efficiency"],
+      ["Wild-Rift-Builder (JxViii) – grupos de ítems y fórmula de penetración","https://github.com/JxViii/Wild-Rift-Builder"]
+    ]
+  }
+};
+
+/* ====== Rivales: listas armadas a mano (no salen de estadísticas) ====== */
+const CC_DURO = ["Annie","Pantheon","Lissandra","Renekton","Leona","Nautilus","Amumu","Vex","Morgana","Galio","Skarner","Rammus","Warwick","Veigar","Lux"];
+// Su CC principal es levantamiento o arrastre: Mercurial Scimitar y la tenacidad no lo quitan
+const LEVANTA = ["Malphite","Alistar","Ornn","Rell","Blitzcrank","Thresh"];
+const CURA = ["Aatrox","Warwick","Dr. Mundo","Vladimir","Olaf","Soraka","Yuumi","Sona","Fiora","Sylas","Swain","Volibear","Nasus","Nami","Seraphine","Gwen"];
+// Daño principal mágico
+const AP = ["Ahri","Akali","Alistar","Amumu","Annie","Aurelion Sol","Aurora","Bard","Blitzcrank","Brand","Braum","Cho'Gath","Diana","Dr. Mundo","Ekko","Evelynn","Fiddlesticks","Fizz","Galio","Gragas","Gwen","Heimerdinger","Hwei","Janna","Karma","Kassadin","Katarina","Kennen","Leona","Lillia","Lissandra","Lulu","Lux","Malphite","Maokai","Mel","Milio","Mordekaiser","Morgana","Nami","Nautilus","Nidalee","Norra","Nunu & Willump","Orianna","Rakan","Rammus","Rell","Rumble","Ryze","Seraphine","Singed","Sona","Soraka","Swain","Sylas","Syndra","Taliyah","Teemo","Thresh","Twisted Fate","Veigar","Vel'Koz","Vex","Viktor","Vladimir","Volibear","Yuumi","Ziggs","Zilean","Zoe","Zyra"];
+// Daño mixto: no cuentan como físico ni como mágico
+const MIXTO = ["Kayle","Kai'Sa","Kog'Maw","Varus","Corki","Jax","Shyvana","Warwick","Shen","Skarner"];
+const DIVERS = ["Zed","Tryndamere","Master Yi","Talon","Katarina","Akali","Fizz","Kha'Zix","Rengar","Evelynn","Diana","Nocturne"];
+const MATCHUPS = {
+  "Malphite":{d:"dificil",t:"Mucho poke y su R corta tus trades. Farmeá seguro y no te metas bajo su torre.",f:"WR China"},
+  "Renekton":{d:"dificil",t:"Gana los trades cortos temprano y la Wind Wall no lo frena. Pegale solo cuando tenga la furia vacía.",f:"WR China"},
+  "Annie":{d:"dificil",t:"Su stun es dirigido y la Wind Wall no lo para. Mirá su contador de pasiva antes de entrar.",f:"WR China"},
+  "Pantheon":{d:"dificil",t:"Stun dirigido y early muy fuerte. Aguantá hasta tener nivel y ítem.",f:"WR China"},
+  "Darius":{d:"dificil",t:"El sangrado y el reset de su R castigan los trades largos. Pegá y salí, no te quedes.",f:"WR China"},
+  "Riven":{d:"parejo",t:"Matchup de habilidad: gana el que usa mejor los tiempos de sus habilidades.",f:"WR China"},
+  "Teemo":{d:"dificil",t:"La ceguera anula tus autos. Usá la E sobre súbditos para acercarte.",f:"WildRift Alpha"},
+  "Vex":{d:"dificil",t:"Su pasiva castiga los dashes. Contá sus usos de E antes de entrar.",f:"WildRift Alpha, WildRiftGuides"},
+  "Irelia":{d:"dificil",t:"Muy fuerte en trades con súbditos cerca. Cuidado cuando tenga la pasiva cargada.",f:"WildRift Alpha"},
+  "Lissandra":{d:"dificil",t:"La Wind Wall no frena su root en área ni su R. No termines un dash dentro del radio de su W.",f:"WildRiftFire, WildRiftGuides"},
+  "Taliyah":{d:"dificil",t:"Su campo de piedras explota si lo cruzás con un dash y la Wind Wall no lo saca. Puede empujarte en plena entrada.",f:"WildRiftGuides"},
+  "Veigar":{d:"dificil",t:"La jaula te stunea si te acercás y la Wind Wall no la bloquea. Con muchas cargas te mata de un combo.",f:"WildRiftGuides"},
+  "Vel'Koz":{d:"contra",t:"Una guía lo da como favorable, pero los datos de China dicen lo contrario. La Wind Wall frena su Q, no su W ni su R. No tiene dash: entrá cuando gaste la E.",f:"WildRiftGuides"},
+  "Syndra":{d:"contra",t:"Una guía lo da como favorable, pero los datos de China dicen lo contrario. La Wind Wall frena las esferas lanzadas y su R, no las que caen al piso.",f:"WildRiftGuides"},
+  "Yone":{d:"dificil",t:"Lo listan como counter en mid. Esquivá su Q3 y pegá cuando vuelva de la E.",f:"WildRiftFire"},
+  "Sett":{d:"dificil",t:"Counter en Barón: su W te castiga si entrás de frente.",f:"WildRiftFire"},
+  "Aurelion Sol":{d:"contra",t:"Las fuentes no coinciden: dos lo ponen como counter tuyo y una como favorable. La Wind Wall no frena su rayo. Presioná temprano antes de que escale.",f:"WildRiftFire, WildRiftGuides / WildRift Alpha"},
+  "Ziggs":{d:"favorable",t:"Matchup favorable: la Wind Wall bloquea su poke. Empujá y buscá all-in con nivel 5.",f:"WildRift Alpha"},
+  "Twisted Fate":{d:"favorable",t:"Matchup favorable. Bloqueá la carta dorada con la Wind Wall y castigá cuando rote.",f:"WildRift Alpha"},
+  "Akshan":{d:"favorable",t:"Matchup favorable. La Wind Wall frena sus autos y su Q.",f:"WildRift Alpha"},
+  "Heimerdinger":{d:"favorable",t:"Matchup favorable. Bloqueá sus misiles con la Wind Wall y entrá cuando gaste la E.",f:"WildRift Alpha"}
+};
+const PEN_GROUPS = {"pen %":["Lord Dominik's Regards","Mortal Reminder","Terminus"]}; // wr-lab, verificado en juego
+
+/* ====== Lógica ====== */
+let LAST = null;
+const $ = id => document.getElementById(id);
+const ROLE_ES = {FIGHTER:"Luchador",MAGE:"Mago",ASSASSIN:"Asesino",TANK:"Tanque",MARKSMAN:"Tirador",SUPPORT:"Soporte"};
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]/g,"");
+const champByKey = {}; DATA.champs.forEach(([n,r]) => champByKey[norm(n)] = {n, roles:r});
+const find = v => champByKey[norm(v || "")] || null;
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+/* Nombres del juego en español. Los marcados con ✓ los confirmó Hernán en capturas del juego (15 nov) */
+const ES = {
+  "Blade of the Ruined King":"Espada del Rey Arruinado", /*✓*/ "Essence Reaver":"Saqueador de Esencia", /*✓*/ "Lord Dominik's Regards":"Recuerdos de Lord Dominik", /*✓*/
+  "Mortal Reminder":"Recordatorio Mortal", "Infinity Edge":"Filo del Infinito", "Guardian Angel":"Ángel de la Guarda", "Death's Dance":"Danza de la Muerte",
+  "Maw of Malmortius":"Fauces de Malmortius", "Mercurial Scimitar":"Cimitarra Mercurial", "Wit's End":"Fin del Ingenio", "Long Sword":"Espada Larga",
+  "Berserker's Greaves":"Grebas de Berserker", "Mercury's Treads":"Botas de Mercurio", "Plated Steelcaps":"Botas de Acero Reforzado",
+  "Conqueror":"Conquistador", /*✓*/ "Brutal":"Brutalidad", /*✓*/ "Cut Down":"Corte", /*✓*/ "Legend: Alacrity":"Leyenda: Celeridad", /*✓*/ "Bone Plating":"Coraza Ósea", /*✓*/
+  "Grasp of the Undying":"Garras del Inmortal", "Demolish":"Demoler", "Second Wind":"Segundo Aire", "Perseverance":"Perseverancia",
+  "Courage of the Colossus":"Valor del Coloso", "Overgrowth":"Sobrecrecimiento", "Lethal Tempo":"Ritmo Letal", "Giant Slayer":"Matagigantes", "Coup de Grace":"Golpe de Gracia",
+  "Flash":"Destello", "Ignite":"Incendiar", "Exhaust":"Extenuación"
+};
+const nom = n => ES[n] ? `${ES[n]} <span class="en">${n}</span>` : n;
+const ic = (n,c="") => `<img class="ic ${c}" src="img/${slug(n)}.webp" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`;
+const tipoDano = n => AP.includes(n) ? "AP" : MIXTO.includes(n) ? "MIX" : "AD";
+const clone = o => JSON.parse(JSON.stringify(o));
+let mode = "base", lane = "mid", clave = "grasp";
+const store = { get(k){ try{ return localStorage.getItem("yasuo_"+k) }catch(e){ return null } }, set(k,v){ try{ localStorage.setItem("yasuo_"+k,v) }catch(e){} } };
+
+function generar(p, L, rival, equipo){
+  const K = p.claves[clave] || p.claves.grasp, resolve = !K.runas;   // Lethal Tempo usa otra página: no se le aplican los cambios de runas
+  const b = {items:clone(L.items), runas:clone(resolve ? L.runas : K.runas[lane]), hechizos:clone(p.hechizos), alt:[], tips:[]};
+  if(resolve && clave !== "grasp"){ b.runas[0] = {fila:"Clave", n:K.nombre, chg:true, why:"Elegida por vos en vez de Grasp"}; }
+  if(!rival) return b;
+  const has = r => rival.roles.includes(r);
+  const cc = CC_DURO.includes(rival.n), cura = CURA.includes(rival.n), dano = tipoDano(rival.n);
+  const setItem = (desde, hasta, why) => {
+    const i = b.items.findIndex(x => x.n === desde && !x.chg);
+    if(i < 0 || b.items.some(x => x.n === hasta)) return false;
+    b.items[i] = {slot:b.items[i].slot, n:hasta, chg:true, why}; return true;
+  };
+  const setPen = (hasta, why) => {
+    const i = b.items.findIndex(x => PEN_GROUPS["pen %"].includes(x.n));
+    if(i < 0 || b.items[i].n === hasta) return;
+    b.items[i] = {slot:b.items[i].slot, n:hasta, chg:true, why};
+  };
+  const setBotas = (n, why) => { const bo = b.items[0]; if(bo.chg || bo.n === n) return; b.items[0] = {slot:bo.slot, n, chg:true, why}; };
+  const setRuna = (fila, n, why) => { if(!resolve) return; const r = b.runas.find(x => x.fila === fila); if(r && !r.chg && r.n !== n){ r.n = n; r.chg = true; r.why = why; delete r.nota; } };
+
+  /* --- Rival de línea --- */
+  if(cura) setPen("Mortal Reminder","Heridas graves contra su curación");
+  else if(has("TANK")) setPen("Lord Dominik's Regards","Más penetración contra mucha vida y armadura");
+  if(has("TANK")) b.tips.push("Contra tanque, mirá abajo la calculadora de Mortal vs. Dominik's.");
+  if(cura) b.tips.push("Tiene mucha curación: Mortal Reminder e Ignite se la cortan.");
+  if(cc){
+    setItem("Infinity Edge","Mercurial Scimitar","Te saca del CC duro (WildRift Alpha, WR-META)");
+    setBotas("Mercury's Treads","Tenacidad contra CC");
+    b.alt.push("Cleanse en vez de Ignite si su CC te mata siempre (WildRift Alpha)");
+  }
+  if(LEVANTA.includes(rival.n)) b.tips.push("Su CC principal es un levantamiento: Mercurial Scimitar y la tenacidad no lo quitan. Guardá la E o el Flash para esquivarlo.");
+  if(dano === "AP"){
+    setItem("Guardian Angel","Maw of Malmortius","Hace daño mágico: resistencia mágica y escudo");
+    if(has("MAGE") || has("ASSASSIN")) b.alt.push("Wit's End también sirve contra daño mágico (WR-META)");
+  }
+  if(has("ASSASSIN")){
+    if(dano !== "AP") setItem("Infinity Edge","Death's Dance","Reparte el burst del asesino en el tiempo");
+    setRuna("Fila 2","Bone Plating","Runa contra burst (WildRiftCore)");
+    if(DIVERS.includes(rival.n)){ b.hechizos[1] = "Exhaust"; b.hechizoChg = "Exhaust contra divers como Zed o Tryndamere (WildRift Alpha)"; }
+  }
+  if(has("FIGHTER") && !has("TANK") && dano !== "AP"){
+    setRuna("Fila 1","Courage of the Colossus","Más aguante en trades largos contra luchadores");
+    setItem("Infinity Edge","Death's Dance","Aguante en peleas largas (30% del daño se retrasa)");
+  }
+  if(has("MARKSMAN")) b.tips.push("Tirador: guardá la Wind Wall para sus autos y habilidades clave, y entrá cuando la tengas lista.");
+  if(MATCHUPS[rival.n]) b.matchup = MATCHUPS[rival.n];
+  if(p.matchupWR[lane][rival.n]) b.wr = p.matchupWR[lane][rival.n];
+
+  /* --- Equipo completo: ajusta lo que el rival de línea no cambió --- */
+  if(equipo && equipo.length >= 3){
+    const c = {ap:0, ad:0, cc:0, cura:0, tank:0, lev:0};
+    equipo.forEach(e => { const d = tipoDano(e.n); if(d==="AP") c.ap++; else if(d==="AD") c.ad++;
+      if(CC_DURO.includes(e.n)) c.cc++; if(CURA.includes(e.n)) c.cura++; if(e.roles.includes("TANK")) c.tank++; if(LEVANTA.includes(e.n)) c.lev++; });
+    b.equipo = c;
+    if(c.cura >= 2) setPen("Mortal Reminder",`Equipo: ${c.cura} con curación`);
+    else if(c.tank >= 2 && !cura) setPen("Lord Dominik's Regards",`Equipo: ${c.tank} tanques`);
+    if(c.cc >= 2){ setItem("Infinity Edge","Mercurial Scimitar",`Equipo: ${c.cc} con CC duro`); setBotas("Mercury's Treads",`Equipo: ${c.cc} con CC duro`); }
+    if(c.ap >= 3){ setItem("Guardian Angel","Maw of Malmortius",`Equipo: ${c.ap} con daño mágico`); setBotas("Mercury's Treads",`Equipo: ${c.ap} con daño mágico`); }
+    if(c.ad >= 4){ setItem("Infinity Edge","Death's Dance",`Equipo: ${c.ad} con daño físico`); b.alt.push("Plated Steelcaps en vez de Berserker's si te matan a autoataques"); }
+    if(c.ap >= 2 && c.ap < 3 && dano !== "AP") b.tips.push("Tienen 2 con daño mágico: si son los que más te pegan, cambiá Guardian Angel por Maw of Malmortius.");
+  }
+  return b;
+}
+
+function validar(items){
+  const errs = [], seen = {};
+  items.forEach(it => (DATA.items[it.n]?.grupos || []).forEach(g => { if(seen[g]) errs.push(`${seen[g]} y ${it.n} no se pueden combinar (${g})`); seen[g] = it.n; }));
+  Object.entries(PEN_GROUPS).forEach(([g, list]) => { const h = items.filter(i => list.includes(i.n)); if(h.length > 1) errs.push(`${h.map(x=>x.n).join(" y ")} no se pueden combinar (${g})`); });
+  const names = items.map(i=>i.n); if(new Set(names).size !== names.length) errs.push("Hay un ítem repetido");
+  return errs;
+}
+const critDe = items => items.reduce((s,i)=>s+(DATA.items[i.n]?.crit||0),0);
+
+function render(){
+  LAST = null; setTimeout(() => { if(typeof pintarPlan === "function") pintarPlan(); }, 0);
+  const p = PATCHES[$("patch").value], L = p.lineas[lane];
+  $("patchInfo").innerHTML = `<div class="mut">Salió el ${p.fecha}</div><ul>${p.cambios.map(c=>`<li>${c}</li>`).join("")}</ul><div class="mut">${p.lectura}</div>
+   <div class="mut" style="margin-top:10px">Winrate en ${L.nombre} (China)</div>
+   <div class="grid2" style="margin-top:6px">${L.stats.map(s=>`<div class="stat"><span class="mut">${s[0]}</span><b>${s[1]}</b><span class="mut" style="font-size:12px">${s[2]}</span></div>`).join("")}</div>`;
+  $("src").innerHTML = p.fuentes.map(f=>`<div><a href="${f[1]}">${f[0]}</a></div>`).join("") + `<div style="margin-top:8px">Winrate y builds: servidor chino, parche ${$("patch").value}. El winrate por rival es real (China Diamante+, 13 nov). Los cambios de ítems y runas por rival y por equipo salen de guías y de listas armadas a mano (CC, curación, tipo de daño).</div>`;
+
+  const MW = p.matchupWR[lane];
+  $("chips").innerHTML = Object.entries(MW).sort((a,b)=>a[1][0]-b[1][0]).map(([n,m])=>`<button class="chip" data-n="${n}"><span class="dot d-${m[2]==="h"?"dificil":"favorable"}"></span>${n} ${m[0]}%</button>`).join("")
+    + Object.entries(MATCHUPS).filter(([n])=>!MW[n]).map(([n,m])=>`<button class="chip" data-n="${n}"><span class="dot d-${m.d}"></span>${n}</button>`).join("");
+  $("keyInfo").textContent = p.claves[clave].info;
+  let rival = null, equipo = null;
+  if(mode === "rival"){
+    const v = $("rival").value.trim();
+    rival = find(v);
+    if(!v){ $("rivalInfo").innerHTML = ""; $("teamInfo").innerHTML = ""; $("out").innerHTML = `<div class="card mut">Escribí contra quién jugás para ajustar la build.</div>`; return; }
+    if(!rival){ $("rivalInfo").innerHTML = `<div class="warn">No encuentro ese campeón. Elegilo de la lista.</div>`; $("out").innerHTML = ""; return; }
+    const pills = c => c.roles.map(r=>`<span class="pill">${ROLE_ES[r]||r}</span>`).join("") + `<span class="pill">${{AP:"Daño mágico",AD:"Daño físico",MIX:"Daño mixto"}[tipoDano(c.n)]}</span>` + (CC_DURO.includes(c.n)?`<span class="pill">CC duro</span>`:"") + (LEVANTA.includes(c.n)?`<span class="pill">Levantamiento</span>`:"") + (CURA.includes(c.n)?`<span class="pill">Curación</span>`:"");
+    $("rivalInfo").innerHTML = pills(rival);
+    const otros = [...document.querySelectorAll(".team")].map(i => i.value.trim()).filter(Boolean);
+    const ok = otros.map(find).filter(Boolean).filter(c => c.n !== rival.n);
+    const malos = otros.filter(o => !find(o));
+    equipo = [rival, ...ok.filter((c,i)=>ok.findIndex(x=>x.n===c.n)===i)];
+    $("teamInfo").innerHTML = malos.length ? `<div class="warn">No encuentro: ${malos.join(", ")}</div>` : (otros.length && equipo.length < 3 ? `<div class="mut">Cargá al menos 2 enemigos más para ajustar por equipo.</div>` : "");
+    const r = rival.roles[0];
+    $("arm").value = r==="TANK"?200:r==="FIGHTER"?140:90; pen();
+    store.set("rival", rival.n);
+  }
+  const b = generar(p, L, rival, equipo);
+  LAST = {b, rival, L, equipo, p};
+  const errs = validar(b.items);
+  const total = b.items.reduce((s,i)=>s+(DATA.items[i.n]?.oro||0),0);
+  const cr = critDe(b.items), crF = Math.min(100, cr*2);
+  let h = "";
+  if(b.wr || b.matchup){
+    h += `<div class="card">`;
+    if(b.wr){ const [w,e,k] = b.wr, dif = (w-e).toFixed(1);
+      h += `<span class="badge b-${k==="h"?"dificil":"favorable"}">${k==="h"?"Peor de lo esperado":"Mejor de lo esperado"} en ${L.nombre}</span>
+        <div style="margin-top:8px"><span class="wr" style="color:${w>=50?"var(--good)":"var(--bad)"}">${w}%</span> gana Yasuo contra ${rival.n}</div>
+        <div class="mut">Esperado por la fuerza de cada campeón: ${e}% (${dif>0?"+":""}${dif} puntos). China Diamante+, 13 nov · seemeta</div>`; }
+    if(b.matchup){ const lbl = {dificil:"Matchup difícil",favorable:"Matchup favorable",parejo:"Matchup parejo",contra:"Datos contradictorios"}[b.matchup.d];
+      h += `<div style="margin-top:${b.wr?10:0}px">${b.wr?"":`<span class="badge b-${b.matchup.d}">${lbl} (guías)</span><div style="height:8px"></div>`}${b.matchup.t}</div><div class="mut" style="margin-top:4px">Consejo: ${b.matchup.f}</div>`; }
+    h += `</div>`;
+  }
+  if(b.equipo){ const c = b.equipo;
+    h += `<div class="card"><h2>Equipo rival</h2><span class="pill">${c.ad} daño físico</span><span class="pill">${c.ap} daño mágico</span><span class="pill">${c.tank} tanques</span><span class="pill">${c.cc} CC duro</span><span class="pill">${c.lev} levantamiento</span><span class="pill">${c.cura} curación</span></div>`; }
+  h += `<div class="card"><h2>${rival?`Build contra ${rival.n}`:"Mejor build 1vs1"} · ${L.nombre}</h2>
+    <div class="mut" style="margin-bottom:8px">Inicio: ${p.inicio} · Núcleo: ${L.nucleoWR}</div>
+    <div class="items">${b.items.map(i=>{const d=DATA.items[i.n]||{};return `<div class="it ${i.chg?"chg":""}"><div class="l">${ic(i.n)}<div><div class="k">${i.slot}</div><div class="n">${nom(i.n)}</div>${i.why?`<div class="why">↻ ${i.why}</div>`:""}${i.nota&&!i.chg?`<div class="mut" style="font-size:12px">${i.nota}</div>`:""}</div></div><div class="g">${d.oro?d.oro+" oro":""}<br>${d.eficiencia?"efic. "+d.eficiencia:""}</div></div>`}).join("")}</div>
+    <div class="crit">Crítico: ${cr}% de ítems × 2 (pasiva) = <b style="color:${crF>=100?"var(--good)":"var(--bad)"}">${crF}%</b>${crF<100?`<div class="warn">Te falta crítico: sumá otro ítem de crítico.</div>`:cr>50?`<div class="mut" style="font-size:12px">Con 2 ítems de crítico ya llegás a 100%. El resto se puede cambiar sin perder crítico.</div>`:`<div class="mut" style="font-size:12px">Justo en 100% con 2 ítems de crítico.</div>`}</div>
+    <div class="mut" style="margin-top:8px">Total: ${total.toLocaleString("es-AR")} oro</div>
+    ${errs.length?`<div class="warn">⚠ ${errs.join("<br>")}</div>`:`<div class="mut" style="color:var(--good)">✓ Todos los ítems se pueden combinar</div>`}
+  </div>`;
+  h += `<div class="card"><h2>Runas</h2>${b.runas.map(r=>`<div class="rr">${ic(r.n,"r")}<div><span class="mut">${r.fila}:</span> <span class="pill ${r.chg?"chg":""}">${nom(r.n)}</span>${r.why?`<div class="why">↻ ${r.why}</div>`:r.nota?`<div class="mut" style="font-size:12px">${r.nota}</div>`:""}</div></div>`).join("")}</div>`;
+  h += `<div class="card"><h2>Hechizos y habilidades</h2>${b.hechizos.map((s,i)=>`<span class="pill sp ${i===1&&b.hechizoChg?"chg":""}">${ic(s,"s")}${nom(s)}</span>`).join("")}${b.hechizoChg?`<div class="why">↻ ${b.hechizoChg}</div>`:""}
+    ${b.alt.length?`<ul>${b.alt.map(a=>`<li class="mut">${a}</li>`).join("")}</ul>`:""}
+    <div style="margin-top:8px">${p.habilidades}</div>
+    ${b.tips.length?`<ul>${b.tips.map(t=>`<li>${t}</li>`).join("")}</ul>`:""}</div>`;
+  $("out").innerHTML = h;
+}
+
+function pen(){
+  const a = +$("arm").value; $("armV").textContent = a;
+  const dmg = p => 100/(100 + a*(1-p/100));
+  const base = dmg(0), m = dmg(30), l = dmg(35);
+  const row = (n,v,extra) => `<div>${n}: <b>${(v*100).toFixed(1)}%</b> del daño llega <span class="mut">${extra||""}</span></div><div class="bar"><i style="width:${v*100}%"></i></div>`;
+  $("penOut").innerHTML = row("Sin penetración",base) + row("Mortal Reminder (30%)",m,"+ heridas graves") + row("Lord Dominik's (35%)",l,"+ hasta 12% más vs. vida extra") +
+    `<div class="mut">Dominik's te da ${(((l/m)-1)*100).toFixed(1)}% más daño que Mortal con esta armadura. Si el rival se cura, Mortal suele valer más.</div>`;
+}
+
+/* ====== Init ====== */
+function setLane(l){ lane = l; $("lMid").classList.toggle("on", l==="mid"); $("lBaron").classList.toggle("on", l==="baron"); store.set("lane", l); render(); }
+function setClave(k){ clave = k; document.querySelectorAll(".kb").forEach(b => b.classList.toggle("on", b.dataset.k === k)); store.set("clave", k); render(); }
+function setClaveInit(k){ clave = k; document.querySelectorAll(".kb").forEach(b => b.classList.toggle("on", b.dataset.k === k)); }
+function setMode(m){ mode = m; $("tBase").classList.toggle("on", m==="base"); $("tRival").classList.toggle("on", m==="rival"); $("rivalBox").classList.toggle("hide", m!=="rival"); if(m!=="rival") LAST = null; render(); if(typeof pintarPlan==="function") pintarPlan(); }
+Object.keys(PATCHES).forEach((k,i) => $("patch").insertAdjacentHTML("beforeend", `<option value="${k}">Parche ${k}${i===0?" (último)":""}</option>`));
+$("champList").innerHTML = DATA.champs.filter(c=>c[0]!=="Yasuo").map(c=>`<option value="${c[0]}">`).join("");
+$("chips").onclick = e => { const c = e.target.closest(".chip"); if(c){ $("rival").value = c.dataset.n; render(); } };
+$("patch").onchange = render;
+$("rival").oninput = () => { render(); if(typeof pintarPlan==="function") pintarPlan(); };
+document.querySelectorAll(".team").forEach(i => i.oninput = render);
+$("arm").oninput = pen;
+$("lMid").onclick = () => setLane("mid");
+$("lBaron").onclick = () => setLane("baron");
+$("tBase").onclick = () => setMode("base");
+$("tRival").onclick = () => setMode("rival");
+document.querySelectorAll(".kb").forEach(b => b.onclick = () => setClave(b.dataset.k));
+if(["lt","conq"].includes(store.get("clave"))) setClaveInit(store.get("clave"));
+if(store.get("lane") === "baron") lane = "baron";
+if(store.get("rival") && find(store.get("rival"))) $("rival").value = store.get("rival");
+pen(); setLane(lane);
+
+/* ====== Escaneo de la pantalla de carga (Gemini) ====== */
+let scanEnemies = [];   // nombres base ya validados contra la lista de campeones
+let scanPick = -1;      // índice del rival de línea
+const CHAMP_NAMES = DATA.champs.map(c => c[0]);
+
+/* Reduce la foto a ~1280 px sin abrirla completa en memoria (createImageBitmap con resize); si el celu no lo soporta, usa el método clásico */
+async function shrink(file){
+  const MAX = 1280;
+  const aJpeg = (draw, w, h) => new Promise((ok, fail) => {
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    c.getContext("2d").drawImage(draw, 0, 0, w, h);
+    c.toBlob(b => { c.width = c.height = 0; b ? ok(b) : fail(new Error("imagen")); }, "image/jpeg", 0.8);
+  });
+  if(window.createImageBitmap){
+    try{
+      const probe = await createImageBitmap(file, {resizeWidth: MAX, resizeQuality: "medium"});
+      /* resizeWidth fija el ancho; si la foto es vertical, el alto puede pasarse: lo acomodo */
+      const k = Math.min(1, MAX / Math.max(probe.width, probe.height));
+      const w = Math.round(probe.width*k), h = Math.round(probe.height*k);
+      const blob = await aJpeg(probe, w, h);
+      if(probe.close) probe.close();
+      return blob;
+    }catch(e){ /* sigo con el método clásico */ }
+  }
+  return new Promise((ok, fail) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, MAX / Math.max(img.width, img.height));
+      aJpeg(img, Math.round(img.width*k), Math.round(img.height*k)).then(ok, fail);
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); fail(new Error("imagen")); };
+    img.src = url;
+  });
+}
+
+/* Propone el rival de línea: el que más parece de mid o de barón según su rol */
+function proponer(list){
+  const sc = n => {
+    const r = (find(n) || {roles:[]}).roles;
+    let s = 0;
+    if(lane === "mid"){ if(r.includes("MAGE")) s += 3; if(r.includes("ASSASSIN")) s += 3; if(r.includes("FIGHTER")) s += 1; }
+    else { if(r.includes("FIGHTER")) s += 3; if(r.includes("TANK")) s += 2; if(r.includes("ASSASSIN")) s += 1; }
+    if(r.includes("SUPPORT") && r.length === 1) s -= 3;
+    if(r.includes("MARKSMAN") && r.length === 1) s -= 2;
+    return s;
+  };
+  let best = 0; list.forEach((n,i) => { if(sc(n) > sc(list[best])) best = i; });
+  return best;
+}
+
+function pintarScan(){
+  if(!scanEnemies.length){ $("scanOut").innerHTML = ""; return; }
+  $("scanOut").innerHTML =
+    `<div class="mut" style="margin-bottom:4px">Leí estos enemigos. Tocá el que va a tu línea (${lane==="mid"?"mid":"barón"}):</div>` +
+    scanEnemies.map((n,i) => `<button class="chip scn" data-i="${i}" style="${i===scanPick?"border-color:var(--acc);background:#1f4b63":""}">${i===scanPick?"✓ ":""}${n}</button>`).join("") +
+    `<div class="mut" style="margin-top:6px;font-size:12px">¿Algo mal leído? Corregilo en los campos de abajo. Los otros enemigos se cargaron en "Equipo rival completo".</div>`;
+}
+
+function aplicarScan(){
+  if(scanPick < 0 || !scanEnemies[scanPick]) return;
+  $("rival").value = scanEnemies[scanPick];
+  const otros = scanEnemies.filter((_,i) => i !== scanPick);
+  document.querySelectorAll(".team").forEach((inp,k) => inp.value = otros[k] || "");
+  if(otros.length) $("teamBox").open = true;
+  if(mode !== "rival") setMode("rival");
+  pintarScan(); render(); pintarPlan();
+}
+
+$("scanOut").onclick = e => {
+  const b = e.target.closest(".scn"); if(!b) return;
+  scanPick = +b.dataset.i; aplicarScan(); armarPlan();
+};
+
+/* ---------- Gemini ---------- */
+const GAPI = "https://generativelanguage.googleapis.com/v1beta";
+const getKey = () => (store.get("gkey") || "").trim();
+
+/* Elige el modelo de visión más nuevo y liviano que tenga la cuenta (Flash-Lite; si no hay, Flash) */
+async function gemModel(key, force){
+  if(!force && store.get("gmodel")) return store.get("gmodel");
+  const r = await fetch(`${GAPI}/models?pageSize=200`, {headers:{"x-goog-api-key":key}});
+  if(!r.ok) throw {code: r.status===400||r.status===403 ? "bad_key" : "net", status:r.status};
+  const j = await r.json();
+  const ok = (j.models||[]).filter(m => (m.supportedGenerationMethods||[]).includes("generateContent"))
+    .map(m => m.name.replace("models/",""))
+    .filter(n => /^gemini-/.test(n) && !/(preview|exp|image|tts|live|audio|embed|thinking|robotics|computer)/.test(n));
+  const ver = n => parseFloat((n.match(/gemini-(\d+(?:\.\d+)?)/)||[0,0])[1]);
+  const pick = re => ok.filter(n => re.test(n)).sort((a,b) => ver(b)-ver(a) || a.length-b.length)[0];
+  const m = pick(/flash-lite/) || pick(/flash/) || ok[0];
+  if(!m) throw {code:"no_model"};
+  store.set("gmodel", m);
+  return m;
+}
+
+async function gemini(parts, retry = true){
+  const key = getKey();
+  if(!key) throw {code:"no_key"};
+  const model = await gemModel(key);
+  const r = await fetch(`${GAPI}/models/${model}:generateContent`, {
+    method:"POST",
+    headers:{"x-goog-api-key":key, "Content-Type":"application/json"},
+    body: JSON.stringify({contents:[{role:"user", parts}], generationConfig:{responseMimeType:"application/json", temperature:0.3}})
+  });
+  if(r.status === 404 && retry){ store.set("gmodel",""); return gemini(parts, false); }
+  if(r.status === 429) throw {code:"rate_limited"};
+  if(r.status === 400 || r.status === 403) throw {code:"bad_key", status:r.status};
+  if(!r.ok) throw {code:"net", status:r.status};
+  const j = await r.json();
+  const txt = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("");
+  try{ return JSON.parse(txt.replace(/^```(json)?|```$/g,"").trim()); }catch(e){ throw {code:"parse"}; }
+}
+
+const aBase64 = blob => new Promise((ok, fail) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(",")[1]); fr.onerror = fail; fr.readAsDataURL(blob); });
+
+const errTxt = e => ({
+  no_key:"Falta tu clave de Gemini: cargala abajo en ⚙️.",
+  bad_key:"Gemini rechazó la clave. Revisala en ⚙️.",
+  rate_limited:"Llegaste al límite gratis de Gemini por ahora. Esperá un rato o cargá a mano.",
+  no_model:"Tu cuenta de Gemini no tiene un modelo con imágenes disponible.",
+  parse:"Gemini respondió algo raro. Probá de nuevo.",
+}[e && e.code] || "No se pudo conectar con Gemini. Revisá internet y probá de nuevo.");
+
+/* ---------- Escaneo ---------- */
+async function escanear(file){
+  if(!getKey()){ $("scanOut").innerHTML = `<div class="warn">${errTxt({code:"no_key"})}</div>`; $("cfgBox").open = true; $("cfgBox").scrollIntoView?.({behavior:"smooth"}); return; }
+  $("scanState").textContent = "Leyendo la pantalla…";
+  $("scanOut").innerHTML = "";
+  try{
+    const blob = await shrink(file);
+    const prompt =
+`Esta imagen es la pantalla de carga de una partida de League of Legends: Wild Rift (cartas con el nombre de cada campeón, a veces con el nombre de la skin).
+El equipo del jugador está ARRIBA (su propio nombre aparece en amarillo) y el equipo ENEMIGO está ABAJO. Si las cartas están en otra disposición, el equipo que NO contiene el nombre en amarillo es el enemigo.
+Devolvé SOLO este JSON:
+{"enemigos":["...","...","...","...","..."],"jungla":null}
+- "enemigos": los campeones del equipo enemigo, de izquierda a derecha. Usá SOLO el nombre base exacto de esta lista (sin skin): ${CHAMP_NAMES.join(", ")}.
+- Si no podés leer una carta con seguridad, poné null en esa posición.
+- "jungla": índice (0 a 4) del enemigo que lleve el hechizo Castigo (Smite) si se ve claramente, si no null.`;
+    const r = await gemini([{text: prompt}, {inline_data:{mime_type:"image/jpeg", data: await aBase64(blob)}}]);
+    /* Si vino con skin ("Annie Bestia Lunar"), me quedo con el campeón cuyo nombre empieza igual (el más largo) */
+    const base = n => { if(!n) return null; const x = find(String(n)); if(x) return x.n; const s = norm(String(n)); let m = null; CHAMP_NAMES.forEach(c => { if(s.startsWith(norm(c)) && (!m || c.length > m.length)) m = c; }); return m; };
+    const lista = (r && Array.isArray(r.enemigos) ? r.enemigos : []).map(base);
+    const jg = (r && Number.isInteger(r.jungla)) ? r.jungla : -1;
+    const validos = lista.map((n,i) => ({n, i})).filter(x => x.n && x.n !== "Yasuo");
+    if(!validos.length){ $("scanOut").innerHTML = `<div class="warn">No pude leer ningún campeón. Probá con la captura de la pantalla de carga completa, o cargalos a mano.</div>`; return; }
+    scanEnemies = validos.map(x => x.n);
+    const cand = validos.filter(x => x.i !== jg).map(x => x.n);
+    const prop = cand.length ? cand[proponer(cand)] : scanEnemies[0];
+    scanPick = scanEnemies.indexOf(prop);
+    aplicarScan();
+    if(validos.length < 5) $("scanOut").insertAdjacentHTML("beforeend", `<div class="warn" style="margin-top:6px">Leí ${validos.length} de 5. Completá el resto a mano.</div>`);
+    iniciarTimer(-45);      // la pantalla de carga dura ~45 s antes del minuto 0
+    armarPlan();
+  }catch(e){
+    $("scanOut").innerHTML = `<div class="warn">${errTxt(e)}</div>`;
+  }finally{
+    $("scanState").textContent = "";
+  }
+}
+
+["scanCam","scanFile"].forEach(id => $(id).onchange = e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if(f) escanear(f); });
+$("lMid").addEventListener("click", () => { if(scanEnemies.length){ scanPick = proponer(scanEnemies); aplicarScan(); } });
+$("lBaron").addEventListener("click", () => { if(scanEnemies.length){ scanPick = proponer(scanEnemies); aplicarScan(); } });
+
+/* ---------- Plan de juego por fases ---------- */
+const FASES = ["Niveles 1–5", "Niveles 6–11", "Cierre de partida"];
+const CORTES = [4.5*60, 12*60];   // minutos aproximados en que se pasa a fase 2 y 3 en Wild Rift
+var fase = 0, faseAuto = true, tick = null;
+
+function planGenerico(){
+  const rv = LAST && LAST.rival ? LAST.rival.n : "tu rival";
+  const tip = LAST && LAST.b.matchup ? LAST.b.matchup.t : "";
+  return {fases:[
+    {objetivo:`Ganar la línea contra ${rv} sin regalar oro.`, puntos:[tip, "Cargá la Q3 (tornado) antes de buscar intercambios.", "Usá la E sobre súbditos para acercarte y alejarte.", "Guardá la Wind Wall para su habilidad más peligrosa.", "A nivel 5 tenés la R: buscá el all-in si el rival está bajo de vida."].filter(Boolean), cuidado:"No te quedes sin escudo de la pasiva al entrar."},
+    {objetivo:"Convertir la ventaja en objetivos y peleas.", puntos:["Con tu primer ítem de crítico completo tus intercambios suben mucho.", "Rotá a dragones y heraldos con tu jungla.", "Flanqueá: entrá cuando un aliado levante a alguien para tu R.", "Hacé split push en la línea lateral si tu equipo puede aguantar."], cuidado:"No entres primero a las peleas sin levantamiento de tu equipo."},
+    {objetivo:"Cerrar la partida.", puntos:["Agrupate para Barón o dragón ancestral.", "Buscá a los tiradores y magos, no al tanque.", "Usá la Wind Wall para cortar el daño a distancia en la pelea.", "Después de ganar una pelea, empujá directo al nexo."], cuidado:"Una muerte tarde puede costar la partida: no te quedes solo."}
+  ], generico:true};
+}
+
+function claveActual(){ const p = PATCHES[$("patch").value]; return p.claves[clave] ? (({grasp:"Agarre del Inmortal",lt:"Compás Letal",conq:"Conquistador"})[clave]) : clave; }
+
+async function armarPlan(){
+  if(!LAST || !LAST.rival){ return; }
+  const key = `${LAST.rival.n}|${lane}|${(LAST.equipo||[]).map(c=>c.n).join(",")}`;
+  if(!getKey()){ guardarPlan(planGenerico(), key); $("planState").textContent = "Plan general. Con tu clave de Gemini se arma uno contra este rival."; return; }
+  $("planState").textContent = "Armando el plan…";
+  try{
+    const b = LAST.b, eq = (LAST.equipo||[]).map(c => `${c.n} (${c.roles.join("/")})`).join(", ");
+    const prompt =
+`Sos coach de Yasuo en League of Legends: Wild Rift (versión de celular, NO el LoL de PC). El jugador es ex Retador y juega Yasuo en ${lane==="mid"?"mid":"barón"}.
+Rival de línea: ${LAST.rival.n}. Equipo enemigo completo: ${eq || LAST.rival.n}.
+${b.wr ? `Winrate de Yasuo contra ${LAST.rival.n}: ${b.wr[0]}% (China Diamante+).` : ""}
+${b.matchup ? `Consejo de guías para este matchup: ${b.matchup.t}` : ""}
+Runa clave: ${claveActual()}. Build: ${b.items.map(i => i.n).join(", ")}.
+Recordá: en Wild Rift la R (Último Aliento) se desbloquea a NIVEL 5, y las partidas duran ~15-20 minutos.
+Armá un plan de juego concreto en 3 fases: niveles 1 a 5 (línea), niveles 6 a 11 (medio juego) y cierre de partida.
+Para cada fase: cuándo pelear y cuándo no, qué habilidad del rival bloquear con la Wind Wall, picos de poder (de Yasuo y del rival), y qué hacer con el mapa.
+Escribí en español rioplatense, frases cortas (máximo 18 palabras), sin relleno.
+Devolvé SOLO este JSON:
+{"fases":[{"objetivo":"...","puntos":["...","...","...","..."],"cuidado":"..."},{...},{...}]}
+Cada fase con 4 a 5 puntos.`;
+    const r = await gemini([{text: prompt}]);
+    if(!r || !Array.isArray(r.fases) || r.fases.length < 3) throw {code:"parse"};
+    guardarPlan(r, key); $("planState").textContent = "";
+  }catch(e){
+    guardarPlan(planGenerico(), key);
+    $("planState").textContent = errTxt(e) + " Te dejo el plan general.";
+  }
+}
+
+function guardarPlan(plan, key){ store.set("plan", JSON.stringify({plan, key})); pintarPlan(); }
+
+function pintarPlan(){
+  const show = mode === "rival" && LAST && LAST.rival;
+  $("planBox").classList.toggle("hide", !show);
+  if(!show) return;
+  $("planVs").textContent = `vs ${LAST.rival.n}`;
+  let saved = null; try{ saved = JSON.parse(store.get("plan") || "null"); }catch(e){}
+  const key = `${LAST.rival.n}|${lane}|${(LAST.equipo||[]).map(c=>c.n).join(",")}`;
+  document.querySelectorAll("#faseTabs .tab").forEach(t => t.classList.toggle("on", +t.dataset.f === fase));
+  if(!saved || saved.key !== key){ $("planOut").innerHTML = `<div class="mut">Tocá "Armar plan" para tener el plan contra ${LAST.rival.n}.</div>`; return; }
+  const f = saved.plan.fases[fase] || {};
+  $("planOut").innerHTML = `<div style="font-weight:600;margin-bottom:4px">${FASES[fase]}: ${f.objetivo || ""}</div>
+    <ul>${(f.puntos||[]).map(x => `<li>${x}</li>`).join("")}</ul>
+    ${f.cuidado ? `<div class="warn" style="color:#f5dd8a">⚠ ${f.cuidado}</div>` : ""}
+    ${saved.plan.generico ? `<div class="mut" style="margin-top:6px;font-size:12px">Plan general (sin Gemini).</div>` : ""}`;
+}
+
+/* Temporizador: avanza de fase solo según el minuto aproximado. No lee nada del juego. */
+const mmss = s => `${s<0?"-":""}${String(Math.floor(Math.abs(s)/60)).padStart(2,"0")}:${String(Math.floor(Math.abs(s))%60).padStart(2,"0")}`;
+function iniciarTimer(offset = 0){ store.set("t0", String(Date.now() - offset*1000)); faseAuto = true; correr(); }
+function pararTimer(){ store.set("t0",""); clearInterval(tick); tick = null; $("tmr").textContent = "--:--"; $("tmrInfo").textContent = ""; }
+function correr(){
+  clearInterval(tick);
+  const paso = () => {
+    const t0 = +store.get("t0"); if(!t0){ pararTimer(); return; }
+    const s = (Date.now() - t0)/1000;
+    $("tmr").textContent = mmss(s);
+    const f = s < CORTES[0] ? 0 : s < CORTES[1] ? 1 : 2;
+    if(faseAuto && f !== fase){ fase = f; pintarPlan(); }
+    $("tmrInfo").textContent = !faseAuto ? "fase manual" : f < 2 ? `fase ${f+2} en ${mmss(CORTES[f]-s)}` : "cierre";
+  };
+  paso(); tick = setInterval(paso, 1000);
+}
+$("tStart").onclick = () => iniciarTimer(0);
+$("tStop").onclick = pararTimer;
+$("faseTabs").onclick = e => { const t = e.target.closest(".tab"); if(!t) return; fase = +t.dataset.f; faseAuto = false; pintarPlan(); };
+$("planGen").onclick = armarPlan;
+
+/* ---------- Ajustes de la clave ---------- */
+function pintarCfg(){ const k = getKey(); $("cfgTag").textContent = k ? `· lista (${store.get("gmodel") || "modelo sin probar"})` : "· falta cargar"; $("cfgKey").value = k; }
+$("cfgSave").onclick = async () => {
+  const k = $("cfgKey").value.trim(); if(!k){ $("cfgOut").textContent = "Pegá la clave primero."; return; }
+  store.set("gkey", k); store.set("gmodel", ""); $("cfgOut").textContent = "Probando…";
+  try{ const m = await gemModel(k, true); $("cfgOut").textContent = `✓ Funciona. Modelo: ${m}`; }
+  catch(e){ $("cfgOut").textContent = errTxt(e); }
+  pintarCfg();
+};
+$("cfgDel").onclick = () => { store.set("gkey",""); store.set("gmodel",""); $("cfgOut").textContent = "Clave borrada de este celular."; pintarCfg(); };
+
+/* ---------- Arranque ---------- */
+pintarCfg();
+if(!getKey()) $("cfgBox").open = true;
+if(+store.get("t0")) correr();
+pintarPlan();
+if("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+
+</script>
+</body>
+</html>
