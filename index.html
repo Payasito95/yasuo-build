@@ -63,6 +63,20 @@ a{color:var(--acc)}
 .rr{display:flex;gap:10px;align-items:center;margin:7px 0}
 .pill.sp{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px}
 details summary{cursor:pointer;color:var(--acc);font-weight:600}
+/* Modo ventanita (app de Android): solo lo necesario */
+body.panel{font-size:13.5px;background:var(--bg)}
+body.panel .wrap{padding:8px 8px 20px}
+body.panel .wrap > *:not(#scanBox):not(#mini):not(#planBox):not(#verTodo){display:none!important}
+body.panel .card{padding:10px;margin:8px 0}
+body.panel #scanBox .seg,body.panel #scanBox .mut[style*="font-size:12px"]{display:none}
+body.panel .en{display:none}
+body.panel h2{font-size:16px;margin-bottom:6px}
+.mi{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line)}
+.mi:last-child{border-bottom:0}
+.mi .ic{width:32px;height:32px}
+.mi .why{font-size:11.5px}
+#verTodo{display:none;width:100%;margin-top:6px}
+body.panel #verTodo{display:block}
 </style>
 </head>
 <body>
@@ -79,6 +93,8 @@ details summary{cursor:pointer;color:var(--acc);font-weight:600}
     <div class="mut" style="margin-top:6px;font-size:12px">En la pantalla de carga sacá captura (Game Space o Encendido + Bajar volumen) y elegila acá. Lee los 5 enemigos, arma la build y el plan de juego.</div>
     <div id="scanOut" style="margin-top:8px"></div>
   </div>
+
+  <div id="mini" class="hide"></div>
 
   <div class="card">
     <label class="mut" for="patch">Parche</label>
@@ -140,6 +156,8 @@ details summary{cursor:pointer;color:var(--acc);font-weight:600}
     <input type="range" id="arm" min="30" max="300" value="120">
     <div id="penOut"></div>
   </div>
+
+  <button class="tab" id="verTodo">Ver todo (runas, parche, ajustes)</button>
 
   <div class="card">
     <details id="cfgBox">
@@ -398,7 +416,7 @@ function validar(items){
 const critDe = items => items.reduce((s,i)=>s+(DATA.items[i.n]?.crit||0),0);
 
 function render(){
-  LAST = null; setTimeout(() => { if(typeof pintarPlan === "function") pintarPlan(); }, 0);
+  LAST = null; setTimeout(() => { if(typeof pintarPlan === "function"){ pintarPlan(); pintarMini(); } }, 0);
   const p = PATCHES[$("patch").value], L = p.lineas[lane];
   $("patchInfo").innerHTML = `<div class="mut">Salió el ${p.fecha}</div><ul>${p.cambios.map(c=>`<li>${c}</li>`).join("")}</ul><div class="mut">${p.lectura}</div>
    <div class="mut" style="margin-top:10px">Winrate en ${L.nombre} (China)</div>
@@ -621,28 +639,34 @@ async function escanear(file){
   try{
     const blob = await shrink(file);
     const prompt =
-`Esta imagen es la pantalla de carga de una partida de League of Legends: Wild Rift (cartas con el nombre de cada campeón, a veces con el nombre de la skin).
-El equipo del jugador está ARRIBA (su propio nombre aparece en amarillo) y el equipo ENEMIGO está ABAJO. Si las cartas están en otra disposición, el equipo que NO contiene el nombre en amarillo es el enemigo.
+`Esta imagen es una captura de League of Legends: Wild Rift. Puede ser una de dos pantallas:
+1) "eleccion": la selección de campeones. Dos columnas: el equipo del jugador a la IZQUIERDA (su propio nombre aparece en amarillo) y el equipo ENEMIGO a la DERECHA (suelen figurar como "Jugador 1", "Jugador 2"...). Cada fila tiene el nombre del campeón en mayúsculas. IGNORÁ los circulitos chicos de arriba de todo: son los campeones baneados, no los elegidos. Si un enemigo todavía no eligió (escudo vacío o sin nombre de campeón), poné null.
+2) "carga": la pantalla de carga. Cartas con el nombre de cada campeón (a veces con la skin). El equipo del jugador está ARRIBA (su nombre en amarillo) y el ENEMIGO ABAJO. Si la disposición es otra, el enemigo es el equipo que NO tiene el nombre en amarillo.
 Devolvé SOLO este JSON:
-{"enemigos":["...","...","...","...","..."],"jungla":null}
-- "enemigos": los campeones del equipo enemigo, de izquierda a derecha. Usá SOLO el nombre base exacto de esta lista (sin skin): ${CHAMP_NAMES.join(", ")}.
-- Si no podés leer una carta con seguridad, poné null en esa posición.
-- "jungla": índice (0 a 4) del enemigo que lleve el hechizo Castigo (Smite) si se ve claramente, si no null.`;
+{"pantalla":"eleccion","enemigos":["...","...","...","...","..."],"jungla":null}
+- "pantalla": "eleccion" o "carga".
+- "enemigos": los 5 del equipo enemigo en orden (arriba a abajo o izquierda a derecha). Usá SOLO el nombre base exacto de esta lista (sin skin): ${CHAMP_NAMES.join(", ")}. null si no eligió o no se lee.
+- "jungla": índice (0 a 4) del enemigo que lleve Castigo (Smite) si se ve claramente, si no null.`;
     const r = await gemini([{text: prompt}, {inline_data:{mime_type:"image/jpeg", data: await aBase64(blob)}}]);
     /* Si vino con skin ("Annie Bestia Lunar"), me quedo con el campeón cuyo nombre empieza igual (el más largo) */
     const base = n => { if(!n) return null; const x = find(String(n)); if(x) return x.n; const s = norm(String(n)); let m = null; CHAMP_NAMES.forEach(c => { if(s.startsWith(norm(c)) && (!m || c.length > m.length)) m = c; }); return m; };
     const lista = (r && Array.isArray(r.enemigos) ? r.enemigos : []).map(base);
     const jg = (r && Number.isInteger(r.jungla)) ? r.jungla : -1;
     const validos = lista.map((n,i) => ({n, i})).filter(x => x.n && x.n !== "Yasuo");
+    etapa = (r && r.pantalla === "eleccion") ? "eleccion" : "carga";
+    store.set("etapa", etapa);
     if(!validos.length){ $("scanOut").innerHTML = `<div class="warn">No pude leer ningún campeón. Probá con la captura de la pantalla de carga completa, o cargalos a mano.</div>`; return; }
     scanEnemies = validos.map(x => x.n);
     const cand = validos.filter(x => x.i !== jg).map(x => x.n);
     const prop = cand.length ? cand[proponer(cand)] : scanEnemies[0];
     scanPick = scanEnemies.indexOf(prop);
     aplicarScan();
-    if(validos.length < 5) $("scanOut").insertAdjacentHTML("beforeend", `<div class="warn" style="margin-top:6px">Leí ${validos.length} de 5. Completá el resto a mano.</div>`);
-    iniciarTimer(-45);      // la pantalla de carga dura ~45 s antes del minuto 0
-    armarPlan();
+    if(validos.length < 5) $("scanOut").insertAdjacentHTML("beforeend", `<div class="warn" style="margin-top:6px">${etapa==="eleccion" ? `${5-validos.length===1?"Falta 1 enemigo":`Faltan ${5-validos.length} enemigos`} por elegir. Volvé a tocar la burbuja cuando ${5-validos.length===1?"elija":"elijan"}.` : `Leí ${validos.length} de 5. Completá el resto a mano.`}</div>`);
+    if(etapa === "carga"){
+      iniciarTimer(-45);      // la pantalla de carga dura ~45 s antes del minuto 0
+      armarPlan();
+    }
+    pintarMini(); pintarPlan();
   }catch(e){
     $("scanOut").innerHTML = `<div class="warn">${errTxt(e)}</div>`;
   }finally{
@@ -714,7 +738,7 @@ Cada fase con 4 a 5 puntos.`;
 function guardarPlan(plan, key){ store.set("plan", JSON.stringify({plan, key})); pintarPlan(); }
 
 function pintarPlan(){
-  const show = mode === "rival" && LAST && LAST.rival;
+  const show = mode === "rival" && LAST && LAST.rival && !(document.body.classList.contains("panel") && etapa === "eleccion");
   $("planBox").classList.toggle("hide", !show);
   if(!show) return;
   $("planVs").textContent = `vs ${LAST.rival.n}`;
@@ -761,11 +785,30 @@ $("cfgSave").onclick = async () => {
 };
 $("cfgDel").onclick = () => { store.set("gkey",""); store.set("gmodel",""); $("cfgOut").textContent = "Clave borrada de este celular."; pintarCfg(); };
 
+/* ---------- Vista chica para la ventanita ---------- */
+var etapa = store.get("etapa") || "carga";
+const PANEL = /[?&]panel=1/.test(location.search);
+if(PANEL) document.body.classList.add("panel");
+$("verTodo").onclick = () => { document.body.classList.remove("panel"); pintarMini(); pintarPlan(); window.scrollTo(0,0); };
+
+function pintarMini(){
+  const box = $("mini");
+  if(!document.body.classList.contains("panel")){ box.classList.add("hide"); return; }
+  box.classList.remove("hide");
+  if(!LAST || !LAST.rival){ box.innerHTML = `<div class="card mut">Tocá la burbuja en la elección de campeones (runas y build) o en la pantalla de carga (build y plan).</div>`; return; }
+  const b = LAST.b, L = LAST.L;
+  const wr = b.wr ? ` · <span style="color:${b.wr[0]>=50?"var(--good)":"var(--bad)"}">${b.wr[0]}% WR</span>` : "";
+  const items = `<div class="card"><h2>Build vs ${LAST.rival.n} <span class="mut" style="font:500 12px Inter">${L.nombre}${wr}</span></h2>${b.items.map(i => `<div class="mi">${ic(i.n)}<div><div>${nom(i.n)}</div>${i.chg && i.why ? `<div class="why">↻ ${i.why}</div>` : ""}</div></div>`).join("")}</div>`;
+  const runas = `<div class="card"><h2>Runas <span class="mut" style="font:500 12px Inter">ponelas ahora</span></h2>${b.runas.map(r => `<div class="mi">${ic(r.n,"r")}<div><div>${nom(r.n)}</div>${r.chg && r.why ? `<div class="why">↻ ${r.why}</div>` : ""}</div></div>`).join("")}
+    <div style="margin-top:6px">${b.hechizos.map(s => `<span class="pill sp">${ic(s,"s")}${nom(s)}</span>`).join("")}</div></div>`;
+  box.innerHTML = etapa === "eleccion" ? runas + items : items;
+}
+
 /* ---------- Arranque ---------- */
 pintarCfg();
 if(!getKey()) $("cfgBox").open = true;
 if(+store.get("t0")) correr();
-pintarPlan();
+pintarPlan(); pintarMini();
 if("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 
 </script>

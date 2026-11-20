@@ -28,7 +28,6 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.WindowManager
 import android.webkit.WebView
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -226,8 +225,14 @@ class CaptureService : Service() {
 
     /* ---------- Ventanita con la build ---------- */
 
+    private val prefs by lazy { getSharedPreferences("ventanita", MODE_PRIVATE) }
+    private val ALFAS = floatArrayOf(1f, 0.85f, 0.7f, 0.55f)
+    private var tamIdx = 0; private var alfaIdx = 0
+
+    @SuppressLint("ClickableViewAccessibility")
     private fun crearPanel() {
         val dp = resources.displayMetrics.density
+        tamIdx = prefs.getInt("tam", 0); alfaIdx = prefs.getInt("alfa", 0)
         val caja = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(0xFF0B0F17.toInt())
@@ -236,15 +241,42 @@ class CaptureService : Service() {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             setBackgroundColor(0xFF131A26.toInt())
-            setPadding((12 * dp).toInt(), 0, 0, 0)
         }
+        fun boton(txt: String, alTocar: () -> Unit) = TextView(this).apply {
+            text = txt; textSize = 17f; setTextColor(0xFFE6ECF5.toInt())
+            gravity = Gravity.CENTER
+            setPadding((11 * dp).toInt(), (7 * dp).toInt(), (11 * dp).toInt(), (7 * dp).toInt())
+            setOnClickListener { alTocar() }
+        }
+        // el título sirve para arrastrar la ventanita
         val titulo = TextView(this).apply {
-            text = "Yasuo Build"; setTextColor(0xFF5AD1E6.toInt()); textSize = 15f
+            text = "⠿ Yasuo"; setTextColor(0xFF5AD1E6.toInt()); textSize = 14f
+            setPadding((10 * dp).toInt(), (7 * dp).toInt(), 0, (7 * dp).toInt())
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
-        val cerrar = Button(this).apply { text = "Cerrar ✕"; setOnClickListener { ocultarPanel() } }
-        barra.addView(titulo); barra.addView(cerrar)
-        val w = Web.crear(this) {
+        var x0 = 0; var y0 = 0; var tx = 0f; var ty = 0f
+        titulo.setOnTouchListener { _, e ->
+            val lp = panelLp ?: return@setOnTouchListener false
+            when (e.action) {
+                MotionEvent.ACTION_DOWN -> { x0 = lp.x; y0 = lp.y; tx = e.rawX; ty = e.rawY }
+                MotionEvent.ACTION_MOVE -> {
+                    lp.x = x0 + (e.rawX - tx).toInt(); lp.y = y0 + (e.rawY - ty).toInt()
+                    panel?.let { if (it.parent != null) wm.updateViewLayout(it, lp) }
+                }
+                MotionEvent.ACTION_UP -> prefs.edit().putInt("x", lp.x).putInt("y", lp.y).apply()
+            }
+            true
+        }
+        barra.addView(titulo)
+        barra.addView(boton("−") { if (tamIdx > 0) { tamIdx--; guardarYAplicar() } })
+        barra.addView(boton("+") { if (tamIdx < 2) { tamIdx++; guardarYAplicar() } })
+        barra.addView(boton("◐") { alfaIdx = (alfaIdx + 1) % ALFAS.size; guardarYAplicar() })
+        barra.addView(boton("✕") { ocultarPanel() })
+        barra.addView(boton("⏻") {
+            Toast.makeText(this, "Burbuja apagada", Toast.LENGTH_SHORT).show()
+            stopSelf()
+        })
+        val w = Web.crear(this, panel = true) {
             webLista = true
             pendiente?.let { js -> web?.evaluateJavascript(js, null) }
             pendiente = null
@@ -259,7 +291,15 @@ class CaptureService : Service() {
         panelLp = WindowManager.LayoutParams(0, 0,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,   // los toques fuera de la ventanita van al juego
-            PixelFormat.TRANSLUCENT).apply { gravity = Gravity.CENTER }
+            PixelFormat.TRANSLUCENT).apply {
+            gravity = Gravity.TOP or Gravity.START
+            x = prefs.getInt("x", -1); y = prefs.getInt("y", -1)
+        }
+    }
+
+    private fun guardarYAplicar() {
+        prefs.edit().putInt("tam", tamIdx).putInt("alfa", alfaIdx).apply()
+        mostrarPanel()
     }
 
     private fun mostrarPanel() {
@@ -267,8 +307,16 @@ class CaptureService : Service() {
         val t = tamReal()
         val lp = panelLp!!
         val apaisado = t.x > t.y
-        lp.width = (t.x * (if (apaisado) 0.62f else 0.94f)).toInt()
-        lp.height = (t.y * (if (apaisado) 0.92f else 0.85f)).toInt()
+        // tres tamaños: chico (por defecto), mediano, grande
+        val anchos = if (apaisado) floatArrayOf(0.32f, 0.42f, 0.58f) else floatArrayOf(0.72f, 0.86f, 0.96f)
+        val altos = if (apaisado) floatArrayOf(0.70f, 0.85f, 0.95f) else floatArrayOf(0.45f, 0.62f, 0.85f)
+        lp.width = (t.x * anchos[tamIdx]).toInt()
+        lp.height = (t.y * altos[tamIdx]).toInt()
+        lp.alpha = ALFAS[alfaIdx]
+        // primera vez: arriba a la derecha. Después, donde la dejaste (sin salirse de la pantalla)
+        if (lp.x < 0 || lp.y < 0) { lp.x = t.x - lp.width - (8 * resources.displayMetrics.density).toInt(); lp.y = (t.y - lp.height) / 2 }
+        lp.x = lp.x.coerceIn(0, maxOf(0, t.x - lp.width))
+        lp.y = lp.y.coerceIn(0, maxOf(0, t.y - lp.height))
         val v = panel!!
         if (v.parent == null) wm.addView(v, lp) else wm.updateViewLayout(v, lp)
         v.visibility = View.VISIBLE

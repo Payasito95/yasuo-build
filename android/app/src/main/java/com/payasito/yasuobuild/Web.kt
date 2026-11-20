@@ -11,7 +11,7 @@ object Web {
     const val URL = "https://payasito95.github.io/yasuo-build/"
 
     @SuppressLint("SetJavaScriptEnabled")
-    fun crear(ctx: Context, alCargar: (() -> Unit)? = null): WebView = WebView(ctx).apply {
+    fun crear(ctx: Context, panel: Boolean = false, alCargar: (() -> Unit)? = null): WebView = WebView(ctx).apply {
         settings.javaScriptEnabled = true
         settings.domStorageEnabled = true
         settings.cacheMode = WebSettings.LOAD_DEFAULT
@@ -20,6 +20,6 @@ object Web {
         webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) { alCargar?.invoke() }
         }
-        loadUrl(URL)
+        loadUrl(if (panel) "$URL?panel=1" else URL)
     }
 }
