@@ -650,6 +650,17 @@ Devolvé SOLO este JSON:
   }
 }
 
+/* Lo usa la app de Android: la burbuja saca la captura y la manda acá */
+window.escanearBase64 = b64 => {
+  const bin = atob(b64), u = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  window.scrollTo(0, 0);
+  escanear(new Blob([u], {type:"image/jpeg"}));
+};
+if(/YasuoApp/.test(navigator.userAgent)){
+  const n = document.querySelector("#scanBox .mut[style*='font-size:12px']");
+  if(n) n.textContent = "En la pantalla de carga tocá la burbuja de Yasuo: saca la captura sola. También podés subir una captura acá.";
+}
 ["scanCam","scanFile"].forEach(id => $(id).onchange = e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if(f) escanear(f); });
 $("lMid").addEventListener("click", () => { if(scanEnemies.length){ scanPick = proponer(scanEnemies); aplicarScan(); } });
 $("lBaron").addEventListener("click", () => { if(scanEnemies.length){ scanPick = proponer(scanEnemies); aplicarScan(); } });
